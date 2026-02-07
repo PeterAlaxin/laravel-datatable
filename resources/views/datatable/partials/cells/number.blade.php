@@ -1,0 +1,1 @@
+{!! $column->format($value, $row) !!}

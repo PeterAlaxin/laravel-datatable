@@ -1,0 +1,14 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - src/
+
+    level: 8
+
+    ignoreErrors:
+        # Livewire magic properties
+        # - '#Call to an undefined method [a-zA-Z0-9\\_]+::mount\(\)#'
+
+    excludePaths:

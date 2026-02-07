@@ -1,0 +1,30 @@
+{
+    "name": "peteralaxin/laravel-datatable",
+    "description": "Reusable DataTable component for Laravel + Livewire with filters, exports, and column settings",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "laravel/framework": "^11.0 || ^12.0",
+        "livewire/livewire": "^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "PeterAlaxin\\DataTable\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "PeterAlaxin\\DataTable\\DataTableServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.93",
+        "larastan/larastan": "^3.0",
+        "orchestra/testbench": "^9.0"
+    }
+}
