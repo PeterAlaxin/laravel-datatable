@@ -13,6 +13,9 @@ class SelectFilter extends Filter
 
     protected bool $multiple = false;
 
+    /** @var (\Closure(Builder<covariant \Illuminate\Database\Eloquent\Model>, string, mixed): Builder<covariant \Illuminate\Database\Eloquent\Model>)|null */
+    protected ?\Closure $queryUsing = null;
+
     /** @var array<string, string|null> */
     protected array $operatorKeys = [
         'equals' => 'datatable::datatable.is',
@@ -52,12 +55,26 @@ class SelectFilter extends Filter
     }
 
     /**
+     * @param \Closure(Builder<covariant \Illuminate\Database\Eloquent\Model>, string, mixed): Builder<covariant \Illuminate\Database\Eloquent\Model> $callback
+     */
+    public function queryUsing(\Closure $callback): static
+    {
+        $this->queryUsing = $callback;
+
+        return $this;
+    }
+
+    /**
      * @param Builder<covariant \Illuminate\Database\Eloquent\Model> $query
      *
      * @return Builder<covariant \Illuminate\Database\Eloquent\Model>
      */
     public function apply(Builder $query, string $operator, mixed $value): Builder
     {
+        if ($this->queryUsing) {
+            return ($this->queryUsing)($query, $operator, $value);
+        }
+
         $column = $this->column;
 
         if ($this->relation) {

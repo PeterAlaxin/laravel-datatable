@@ -250,6 +250,26 @@ SelectFilter::make('status', 'Status')
 
 Operators: equals, not_equals, in, not_in
 
+#### Custom Query Logic (`queryUsing`)
+
+For cases where the default column-based filtering isn't sufficient, use `queryUsing` to define custom query logic:
+
+```php
+SelectFilter::make('category', 'Category')
+    ->options(['electronics' => 'Electronics', 'books' => 'Books'])
+    ->queryUsing(function (Builder $query, string $operator, mixed $value) {
+        return match ($operator) {
+            'equals' => $query->whereHas('categories', fn($q) => $q->where('slug', $value)),
+            'not_equals' => $query->whereDoesntHave('categories', fn($q) => $q->where('slug', $value)),
+            'in' => $query->whereHas('categories', fn($q) => $q->whereIn('slug', (array) $value)),
+            'not_in' => $query->whereDoesntHave('categories', fn($q) => $q->whereIn('slug', (array) $value)),
+            default => $query,
+        };
+    })
+```
+
+When `queryUsing` is set, it completely replaces the default filter behavior, giving you full control over the query.
+
 ### TagFilter
 
 For many-to-many relationships.
@@ -379,7 +399,7 @@ return [
 
 ## Translations
 
-Available locales: English (`en`), Slovak (`sk`).
+Available locales: `cs`, `da`, `de`, `el`, `en`, `es`, `fi`, `fr`, `hu`, `it`, `nl`, `no`, `pl`, `pt`, `ro`, `sk`, `sv`, `tr`, `uk`.
 
 Publish and customize:
 
