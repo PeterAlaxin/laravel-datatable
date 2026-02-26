@@ -2,6 +2,7 @@
 
 namespace PeterAlaxin\DataTable\Filters;
 
+use Closure;
 use Illuminate\Database\Eloquent\Builder;
 
 class SelectFilter extends Filter
@@ -13,8 +14,8 @@ class SelectFilter extends Filter
 
     protected bool $multiple = false;
 
-    /** @var (\Closure(Builder<covariant \Illuminate\Database\Eloquent\Model>, string, mixed): Builder<covariant \Illuminate\Database\Eloquent\Model>)|null */
-    protected ?\Closure $queryUsing = null;
+    /** @var (Closure(Builder<covariant \Illuminate\Database\Eloquent\Model>, string, mixed): Builder<covariant \Illuminate\Database\Eloquent\Model>)|null */
+    protected ?Closure $queryUsing = null;
 
     /** @var array<string, string|null> */
     protected array $operatorKeys = [
@@ -55,9 +56,9 @@ class SelectFilter extends Filter
     }
 
     /**
-     * @param \Closure(Builder<covariant \Illuminate\Database\Eloquent\Model>, string, mixed): Builder<covariant \Illuminate\Database\Eloquent\Model> $callback
+     * @param Closure(Builder<covariant \Illuminate\Database\Eloquent\Model>, string, mixed): Builder<covariant \Illuminate\Database\Eloquent\Model> $callback
      */
-    public function queryUsing(\Closure $callback): static
+    public function queryUsing(Closure $callback): static
     {
         $this->queryUsing = $callback;
 

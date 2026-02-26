@@ -62,7 +62,7 @@ abstract class Filter
             // If translationKey doesn't start with 'datatable::', it's a static label (like '=' or '≠')
             if ($translationKey === null) {
                 $operators[$key] = __('datatable::datatable.'.$key);
-            } elseif (!str_starts_with($translationKey, 'datatable::')) {
+            } elseif (! str_starts_with($translationKey, 'datatable::')) {
                 $operators[$key] = $translationKey;
             } else {
                 $operators[$key] = __($translationKey);

@@ -410,17 +410,36 @@ trait WithDataTable
                         $foreignKey = $relation->getForeignKeyName();
                         $ownerKey = $relation->getOwnerKeyName();
 
-                        $query->orderBy(
-                            $relation->getRelated()->newQuery()
-                                ->select($relationColumn)
-                                ->whereColumn(
-                                    $relatedTable.'.'.$ownerKey,
-                                    $model->getTable().'.'.$foreignKey,
-                                )
-                                ->limit(1),
-                            $this->sortDirection,
-                        );
+                        $subQuery = $relation->getRelated()->newQuery();
+
+                        if (str_contains($relationColumn, '.')) {
+                            [$nestedRelationName, $actualColumn] = explode('.', $relationColumn, 2);
+                            $nestedRelation = $relation->getRelated()->{$nestedRelationName}();
+
+                            if ($nestedRelation instanceof \Illuminate\Database\Eloquent\Relations\BelongsTo) {
+                                $nestedTable = $nestedRelation->getRelated()->getTable();
+                                $nestedForeignKey = $nestedRelation->getForeignKeyName();
+                                $nestedOwnerKey = $nestedRelation->getOwnerKeyName();
+
+                                $subQuery->join(
+                                    $nestedTable,
+                                    $relatedTable.'.'.$nestedForeignKey,
+                                    '=',
+                                    $nestedTable.'.'.$nestedOwnerKey,
+                                )->select($nestedTable.'.'.$actualColumn);
+                            }
+                        } else {
+                            $subQuery->select($relationColumn);
+                        }
+
+                        $subQuery->whereColumn(
+                            $relatedTable.'.'.$ownerKey,
+                            $model->getTable().'.'.$foreignKey,
+                        )->limit(1);
+
+                        $query->orderBy($subQuery, $this->sortDirection);
                     }
+
                 } else {
                     $query->orderBy($this->sortColumn, $this->sortDirection);
                 }
