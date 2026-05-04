@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.3.0] - 2026-05-04
+
+### Added
+- Laravel 13 support (`laravel/framework: ^13.0`)
+- `orchestra/testbench` constraint extended to `^10.0` (Laravel 12) and `^11.0` (Laravel 13)
+
 ## [v1.2.0] - 2026-02-17
 
 ### Added

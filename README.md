@@ -5,7 +5,7 @@ Reusable DataTable component for Laravel + Livewire with filters, exports, and c
 ## Requirements
 
 - PHP 8.2+
-- Laravel 11.0+
+- Laravel 11, 12 or 13
 - Livewire 4.0+
 
 ## Installation
