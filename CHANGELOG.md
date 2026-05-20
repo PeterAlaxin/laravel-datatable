@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.4.0] - 2026-05-20
+
+### Added
+- `searchUsing()` method on `Column` for custom global search logic — accepts a `Closure(Builder, string)` and is wrapped in `orWhere()` so the body can freely use `where` / `whereHas` / `whereRaw` while still combining as OR with sibling searchable columns. Useful for JSON fields, complex/nested relations, fulltext search, multi-column logical groups.
+
 ## [v1.3.0] - 2026-05-04
 
 ### Added

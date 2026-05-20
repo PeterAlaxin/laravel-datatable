@@ -203,6 +203,32 @@ Column::make('key', 'Label')
     ->linkUsing(fn($row) => route('items.show', $row))
     ->sortUsing(fn($query, $direction) => $query->orderBy('name', $direction))
     ->sumUsing(fn($rows) => $rows->sum('total'))
+    ->searchUsing(fn($query, $search) => $query->whereJsonContains('tags', $search))
+```
+
+### Custom Search Logic (`searchUsing`)
+
+When the default `LIKE %search%` against the column key isn't enough — for JSON fields, nested or polymorphic relations, fulltext search, or grouping multiple physical columns under one logical column — use `searchUsing` to provide custom search logic.
+
+The closure receives a fresh sub-query builder and the search string. It is automatically wrapped in `orWhere(...)`, so you can freely mix `where` / `orWhere` / `whereHas` / `whereRaw` inside — the whole sub-group is OR-combined with sibling searchable columns. Calling `searchUsing()` also auto-enables `searchable`.
+
+```php
+// JSON field
+TextColumn::make('meta_bio', 'Bio')
+    ->searchUsing(fn($q, $s) => $q->whereRaw("JSON_EXTRACT(meta, '$.bio') LIKE ?", ["%{$s}%"]));
+
+// Nested relation with multi-column match
+TextColumn::make('customer_name', 'Customer')
+    ->searchUsing(fn($q, $s) => $q->whereHas('customer', fn($r) =>
+        $r->where('first_name', 'LIKE', "%{$s}%")
+          ->orWhere('last_name', 'LIKE', "%{$s}%")
+    ));
+
+// Fulltext (MySQL)
+TextColumn::make('content', 'Content')
+    ->searchUsing(fn($q, $s) => $q->whereRaw(
+        'MATCH(title, body) AGAINST (? IN NATURAL LANGUAGE MODE)', [$s]
+    ));
 ```
 
 ## Filter Types
