@@ -348,7 +348,9 @@ trait WithDataTable
                 $search = $this->search;
                 $query->where(function ($q) use ($searchableColumns, $search) {
                     foreach ($searchableColumns as $column) {
-                        if ($column instanceof RelationColumn) {
+                        if ($column->hasSearchUsing()) {
+                            $column->applySearchUsing($q, $search);
+                        } elseif ($column instanceof RelationColumn) {
                             $q->orWhereHas($column->getRelationName(), function ($relQuery) use ($column, $search) {
                                 $relQuery->where($column->getRelationColumn(), 'LIKE', "%{$search}%");
                             });
@@ -552,7 +554,9 @@ trait WithDataTable
                     $search = $this->search;
                     $query->where(function ($q) use ($searchableColumns, $search) {
                         foreach ($searchableColumns as $column) {
-                            if ($column instanceof RelationColumn) {
+                            if ($column->hasSearchUsing()) {
+                                $column->applySearchUsing($q, $search);
+                            } elseif ($column instanceof RelationColumn) {
                                 $q->orWhereHas($column->getRelationName(), function ($relQuery) use ($column, $search) {
                                     $relQuery->where($column->getRelationColumn(), 'LIKE', "%{$search}%");
                                 });

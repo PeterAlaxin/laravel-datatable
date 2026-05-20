@@ -32,6 +32,8 @@ abstract class Column
 
     protected ?Closure $sortUsing = null;
 
+    protected ?Closure $searchUsing = null;
+
     protected int $width = 0;
 
     protected string $alignment = 'left';
@@ -170,6 +172,35 @@ abstract class Column
         $sortUsing = $this->sortUsing;
 
         return $sortUsing($query, $direction);
+    }
+
+    /**
+     * @param Closure(\Illuminate\Database\Eloquent\Builder<covariant \Illuminate\Database\Eloquent\Model>, string): void $callback
+     */
+    public function searchUsing(Closure $callback): static
+    {
+        $this->searchUsing = $callback;
+        $this->searchable = true;
+
+        return $this;
+    }
+
+    public function hasSearchUsing(): bool
+    {
+        return $this->searchUsing !== null;
+    }
+
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<covariant \Illuminate\Database\Eloquent\Model> $query
+     */
+    public function applySearchUsing(\Illuminate\Database\Eloquent\Builder $query, string $search): void
+    {
+        /** @var Closure $searchUsing */
+        $searchUsing = $this->searchUsing;
+
+        $query->orWhere(function ($sub) use ($searchUsing, $search) {
+            $searchUsing($sub, $search);
+        });
     }
 
     public function width(int $width): static
