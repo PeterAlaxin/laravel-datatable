@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.5.0] - 2026-07-20
+
+### Added
+- `dticon()` helper and configurable icon presets — logical icon names used across the views are resolved to CSS classes via the selected preset. Ships `tabler` (default) and `fontawesome` presets, configurable through `icons` / `icon_presets` in `config/datatable.php` (or the `DATATABLE_ICONS` env var).
+- `ui` config option (`tabler` default, `adminlte`) — the `adminlte` mode loads a CSS compatibility layer that maps the Tabler classes used by the package onto Bootstrap 5, plus a self-contained Bootstrap 5 confirm modal. Configurable via the `DATATABLE_UI` env var.
+- Tabler-like sortable header styling with explicit sort-direction icons and compact square row-action buttons.
+
+### Changed
+- Default `pagination_view` is now `livewire::bootstrap` (Livewire 4).
+
 ## [v1.4.0] - 2026-05-20
 
 ### Added

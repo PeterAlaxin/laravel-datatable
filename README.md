@@ -414,13 +414,59 @@ Publish the config file and adjust defaults:
 return [
     'per_page_options' => [10, 25, 50, 100],
     'default_per_page' => 25,
+    'pagination_view' => 'livewire::bootstrap',
     'date_format' => 'd.m.Y',
     'datetime_format' => 'd.m.Y H:i',
     'csv_separator' => ';',
     'number_decimal_separator' => ',',
     'number_thousands_separator' => ' ',
     'default_currency' => 'EUR',
+
+    // UI theme: 'tabler' (native look) or 'adminlte' (Bootstrap 5 compatibility layer)
+    'ui' => env('DATATABLE_UI', 'tabler'),
+
+    // Icon preset used to resolve logical icon names via the dticon() helper
+    'icons' => env('DATATABLE_ICONS', 'tabler'),
 ];
+```
+
+## Theming & Icons
+
+The package renders [Tabler](https://tabler.io) markup and icons by default.
+
+### UI theme (`ui`)
+
+Set `ui` to `adminlte` when integrating into an AdminLTE / Bootstrap 5 project. This loads a CSS compatibility layer that maps the Tabler classes used by the package onto their Bootstrap 5 equivalents, and switches confirmation dialogs to a self-contained Bootstrap 5 modal — no extra assets required.
+
+```dotenv
+DATATABLE_UI=adminlte
+```
+
+### Icons (`icons`)
+
+Logical icon names used across the views (`search`, `trash`, `settings`, …) are resolved to CSS classes through the configured preset by the `dticon()` helper. Two presets ship out of the box:
+
+- `tabler` — Tabler Icons (`ti ti-*`), the default
+- `fontawesome` — Font Awesome (`fas fa-*`), with a name map for icons that differ from their Tabler counterparts
+
+```dotenv
+DATATABLE_ICONS=fontawesome
+```
+
+Add or override presets under `icon_presets` in the config. Each preset defines a `base` class, a `name_prefix`, and an optional `map` translating logical names to preset-specific icon names:
+
+```php
+'icon_presets' => [
+    'fontawesome' => [
+        'base' => 'fas',
+        'name_prefix' => 'fa-',
+        'map' => [
+            'search' => 'magnifying-glass',
+            'trash' => 'trash',
+            // keys not listed here fall back to fas fa-<name>
+        ],
+    ],
+],
 ```
 
 ## Translations
