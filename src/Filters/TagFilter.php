@@ -33,8 +33,7 @@ class TagFilter extends SelectFilter
     }
 
     /**
-     * @param Builder<covariant \Illuminate\Database\Eloquent\Model> $query
-     *
+     * @param  Builder<covariant \Illuminate\Database\Eloquent\Model>  $query
      * @return Builder<covariant \Illuminate\Database\Eloquent\Model>
      */
     public function apply(Builder $query, string $operator, mixed $value): Builder

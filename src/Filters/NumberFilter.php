@@ -32,8 +32,7 @@ class NumberFilter extends Filter
     }
 
     /**
-     * @param Builder<covariant \Illuminate\Database\Eloquent\Model> $query
-     *
+     * @param  Builder<covariant \Illuminate\Database\Eloquent\Model>  $query
      * @return Builder<covariant \Illuminate\Database\Eloquent\Model>
      */
     public function apply(Builder $query, string $operator, mixed $value): Builder
@@ -50,8 +49,7 @@ class NumberFilter extends Filter
     }
 
     /**
-     * @param Builder<covariant \Illuminate\Database\Eloquent\Model> $query
-     *
+     * @param  Builder<covariant \Illuminate\Database\Eloquent\Model>  $query
      * @return Builder<covariant \Illuminate\Database\Eloquent\Model>
      */
     protected function applyCondition(Builder $query, string $column, string $operator, mixed $value): Builder
@@ -72,8 +70,7 @@ class NumberFilter extends Filter
     }
 
     /**
-     * @param Builder<covariant \Illuminate\Database\Eloquent\Model> $query
-     *
+     * @param  Builder<covariant \Illuminate\Database\Eloquent\Model>  $query
      * @return Builder<covariant \Illuminate\Database\Eloquent\Model>
      */
     protected function applyApproximately(Builder $query, string $column, mixed $value): Builder

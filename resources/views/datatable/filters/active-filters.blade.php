@@ -25,7 +25,7 @@
                     "{{ $displayValue }}"
                 @endif
                 <a href="#" class="ms-1 text-reset" wire:click.prevent="removeFilter({{ $index }})">
-                    <i class="ti ti-x"></i>
+                    <i class="{{ dticon('x') }}"></i>
                 </a>
             </span>
         @endforeach

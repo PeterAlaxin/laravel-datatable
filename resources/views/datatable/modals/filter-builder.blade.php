@@ -166,7 +166,7 @@
                             class="btn btn-primary"
                             @click="addFilter()"
                             :disabled="!selectedColumn || !selectedOperator">
-                        <i class="ti ti-plus me-1"></i>
+                        <i class="{{ dticon('plus') }} me-1"></i>
                         {{ __('datatable::datatable.add_filter') }}
                     </button>
                 </div>
@@ -182,7 +182,7 @@
                     <button type="submit"
                             class="btn btn-outline-primary text-nowrap"
                             @if(count($activeFilters) === 0) disabled @endif>
-                        <i class="ti ti-device-floppy me-1"></i>
+                        <i class="{{ dticon('device-floppy') }} me-1"></i>
                         {{ __('datatable::datatable.save_filter') }}
                     </button>
                 </form>

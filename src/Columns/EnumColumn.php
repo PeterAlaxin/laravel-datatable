@@ -6,14 +6,14 @@ class EnumColumn extends Column
 {
     protected string $type = 'enum';
 
-    /** @var array<string, string> */
+    /** @var array<array-key, string> */
     protected array $options = [];
 
-    /** @var array<string, string> */
+    /** @var array<array-key, string> */
     protected array $colors = [];
 
     /**
-     * @param array<string, string> $options
+     * @param  array<array-key, string>  $options
      */
     public function options(array $options): static
     {
@@ -23,7 +23,7 @@ class EnumColumn extends Column
     }
 
     /**
-     * @param array<string, string> $colors
+     * @param  array<array-key, string>  $colors
      */
     public function colors(array $colors): static
     {
@@ -33,7 +33,7 @@ class EnumColumn extends Column
     }
 
     /**
-     * @return array<string, string>
+     * @return array<array-key, string>
      */
     public function getOptions(): array
     {

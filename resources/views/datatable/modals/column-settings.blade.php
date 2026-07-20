@@ -55,7 +55,7 @@
                              x-on:dragend="handleDragEnd()"
                              :class="{ 'bg-light': dragOver === {{ $index }} }">
                             <span class="cursor-move me-2" style="cursor: grab;">
-                                <i class="ti ti-grip-vertical text-muted"></i>
+                                <i class="{{ dticon('grip-vertical') }} text-muted"></i>
                             </span>
 
                             <span class="flex-grow-1">{{ $column->getLabel() }}</span>
@@ -65,7 +65,7 @@
                                     class="btn btn-sm btn-ghost-{{ $isVisible ? 'primary' : 'secondary' }}"
                                     wire:click="toggleColumnVisibility('{{ $column->getKey() }}')"
                                     title="{{ $isVisible ? __('datatable::datatable.hide') : __('datatable::datatable.show') }}">
-                                <i class="ti ti-{{ $isVisible ? 'eye' : 'eye-off' }}"></i>
+                                <i class="{{ dticon($isVisible ? 'eye' : 'eye-off') }}"></i>
                             </button>
 
                             {{-- Sum toggle --}}
@@ -74,7 +74,7 @@
                                         class="btn btn-sm btn-ghost-{{ $showSum ? 'primary' : 'secondary' }}"
                                         wire:click="toggleColumnSum('{{ $column->getKey() }}')"
                                         title="{{ __('datatable::datatable.show_sum') }}">
-                                    <i class="ti ti-sum"></i>
+                                    <i class="{{ dticon('sum') }}"></i>
                                 </button>
                             @endif
                         </div>

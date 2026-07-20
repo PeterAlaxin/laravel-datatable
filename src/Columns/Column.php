@@ -3,6 +3,7 @@
 namespace PeterAlaxin\DataTable\Columns;
 
 use Closure;
+use Illuminate\Database\Eloquent\Builder;
 
 abstract class Column
 {
@@ -162,11 +163,10 @@ abstract class Column
     /**
      * @template TModel of \Illuminate\Database\Eloquent\Model
      *
-     * @param \Illuminate\Database\Eloquent\Builder<TModel> $query
-     *
-     * @return \Illuminate\Database\Eloquent\Builder<TModel>
+     * @param  Builder<TModel>  $query
+     * @return Builder<TModel>
      */
-    public function applySortUsing(\Illuminate\Database\Eloquent\Builder $query, string $direction): \Illuminate\Database\Eloquent\Builder
+    public function applySortUsing(Builder $query, string $direction): Builder
     {
         /** @var Closure $sortUsing */
         $sortUsing = $this->sortUsing;
@@ -175,7 +175,7 @@ abstract class Column
     }
 
     /**
-     * @param Closure(\Illuminate\Database\Eloquent\Builder<covariant \Illuminate\Database\Eloquent\Model>, string): void $callback
+     * @param  Closure(Builder<covariant \Illuminate\Database\Eloquent\Model>, string): void  $callback
      */
     public function searchUsing(Closure $callback): static
     {
@@ -191,9 +191,9 @@ abstract class Column
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder<covariant \Illuminate\Database\Eloquent\Model> $query
+     * @param  Builder<covariant \Illuminate\Database\Eloquent\Model>  $query
      */
-    public function applySearchUsing(\Illuminate\Database\Eloquent\Builder $query, string $search): void
+    public function applySearchUsing(Builder $query, string $search): void
     {
         /** @var Closure $searchUsing */
         $searchUsing = $this->searchUsing;

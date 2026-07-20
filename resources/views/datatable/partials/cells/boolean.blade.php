@@ -1,11 +1,11 @@
 @if($column->usesIcons())
     @if($value)
         <span class="text-success">
-            <i class="ti ti-{{ $column->getTrueIcon() }}"></i>
+            <i class="{{ dticon($column->getTrueIcon()) }}"></i>
         </span>
     @else
         <span class="text-muted">
-            <i class="ti ti-{{ $column->getFalseIcon() }}"></i>
+            <i class="{{ dticon($column->getFalseIcon()) }}"></i>
         </span>
     @endif
 @else

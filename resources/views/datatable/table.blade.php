@@ -1,3 +1,98 @@
+@assets
+    @if(config('datatable.ui') === 'adminlte')
+        {{-- AdminLTE / Bootstrap 5 kompatibilná vrstva pre Tabler triedy použité v balíku --}}
+        <style>
+            :root {
+                --tblr-border-color: var(--bs-border-color);
+                --tblr-bg-surface: var(--bs-body-bg);
+                --tblr-bg-surface-secondary: var(--bs-secondary-bg);
+                --tblr-primary-rgb: var(--bs-primary-rgb);
+            }
+            .btn-ghost-secondary { color: var(--bs-secondary-color); background: transparent; border-color: transparent; }
+            .btn-ghost-secondary:hover { background-color: var(--bs-secondary-bg); }
+            .btn-ghost-primary { color: var(--bs-primary); background: transparent; border-color: transparent; }
+            .btn-ghost-primary:hover { background-color: rgba(var(--bs-primary-rgb), .1); }
+            .btn-ghost-danger { color: var(--bs-danger); background: transparent; border-color: transparent; }
+            .btn-ghost-danger:hover { background-color: rgba(var(--bs-danger-rgb), .1); }
+            .btn-icon { display: inline-flex; align-items: center; justify-content: center; padding-left: .5rem; padding-right: .5rem; }
+            .btn-list { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
+            .input-icon { position: relative; display: flex; }
+            .input-icon .form-control { padding-left: 2.5rem; }
+            .input-icon-addon { position: absolute; top: 0; left: 0; height: 100%; width: 2.5rem; display: flex; align-items: center; justify-content: center; color: var(--bs-secondary-color); pointer-events: none; z-index: 4; }
+            .table-vcenter td, .table-vcenter th { vertical-align: middle; }
+            /* Bootstrap 4 -> 5: balík generuje text-right/text-left, BS5 pozná len text-end/text-start */
+            .text-right { text-align: right !important; }
+            .text-left { text-align: left !important; }
+            .badge-notification { position: absolute; top: 0; right: 0; transform: translate(50%, -50%); }
+            .badge-pill { border-radius: 50rem; }
+            .badge-filter-count { font-size: .625rem; padding: .2em .45em; }
+            .modal-blur { backdrop-filter: blur(2px); }
+            .cursor-move { cursor: grab; }
+            .bg-blue-lt { background-color: var(--bs-primary-bg-subtle) !important; color: var(--bs-primary-text-emphasis) !important; }
+            .bg-primary-lt { background-color: var(--bs-primary-bg-subtle) !important; color: var(--bs-primary-text-emphasis) !important; }
+            .bg-success-lt { background-color: var(--bs-success-bg-subtle) !important; color: var(--bs-success-text-emphasis) !important; }
+            .bg-secondary-lt { background-color: var(--bs-secondary-bg-subtle) !important; color: var(--bs-secondary-text-emphasis) !important; }
+            .bg-danger-lt { background-color: var(--bs-danger-bg-subtle) !important; color: var(--bs-danger-text-emphasis) !important; }
+            .bg-warning-lt { background-color: var(--bs-warning-bg-subtle) !important; color: var(--bs-warning-text-emphasis) !important; }
+            .bg-info-lt { background-color: var(--bs-info-bg-subtle) !important; color: var(--bs-info-text-emphasis) !important; }
+        </style>
+    @endif
+
+    {{-- Self-contained confirm modal (Bootstrap 5). Reaguje na window event 'open-confirm-modal'. --}}
+    <script>
+        (function () {
+            if (window.__dtConfirmModalInit) return;
+            window.__dtConfirmModalInit = true;
+
+            window.addEventListener('open-confirm-modal', function (e) {
+                var d = e.detail || {};
+                var old = document.getElementById('dt-confirm-modal');
+                if (old) old.remove();
+
+                var iconHtml = d.icon ? '<i class="' + d.icon + ' me-2"></i>' : '';
+                var color = d.confirmColor || 'danger';
+
+                var wrapper = document.createElement('div');
+                wrapper.innerHTML =
+                    '<div class="modal fade" id="dt-confirm-modal" tabindex="-1" aria-hidden="true">' +
+                        '<div class="modal-dialog modal-dialog-centered">' +
+                            '<div class="modal-content">' +
+                                '<div class="modal-header">' +
+                                    '<h5 class="modal-title">' + iconHtml + (d.title || '') + '</h5>' +
+                                    '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>' +
+                                '</div>' +
+                                '<div class="modal-body"></div>' +
+                                '<div class="modal-footer">' +
+                                    '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"></button>' +
+                                    '<button type="button" class="btn btn-' + color + '" data-dt-confirm></button>' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>';
+
+                var modalEl = wrapper.firstElementChild;
+                modalEl.querySelector('.modal-body').textContent = d.message || '';
+                modalEl.querySelector('[data-bs-dismiss="modal"].btn-secondary').textContent = d.cancelText || 'Zrušiť';
+                var confirmBtn = modalEl.querySelector('[data-dt-confirm]');
+                confirmBtn.textContent = d.confirmText || 'OK';
+
+                document.body.appendChild(modalEl);
+                var modal = new window.bootstrap.Modal(modalEl);
+
+                confirmBtn.addEventListener('click', function () {
+                    if (d.onConfirmEmit) {
+                        window.Livewire.dispatch(d.onConfirmEmit, d.onConfirmParams || {});
+                    }
+                    modal.hide();
+                });
+                modalEl.addEventListener('hidden.bs.modal', function () { modalEl.remove(); });
+
+                modal.show();
+            });
+        })();
+    </script>
+@endassets
+
 <div>
     <style>
         .datatable-zebra tbody tr:nth-child(odd) {
@@ -28,6 +123,53 @@
         .saved-filter-item:hover {
             background-color: var(--tblr-bg-surface-secondary);
         }
+
+        /* Tabler-like header: malé sivé kapitálky s decentným rozstupom */
+        .datatable-zebra thead th {
+            font-size: 0.6875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--tblr-secondary-color, #6c757d);
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+        /* Zoraďovací odkaz zdedí sivú farbu hlavičky, pri hoveri stmavne */
+        .datatable-zebra thead th a.table-sort {
+            color: inherit;
+        }
+        .datatable-zebra thead th a.table-sort:hover {
+            color: var(--tblr-body-color, #182433);
+        }
+        /* Neutrálna dvojšípka je nenápadná, aktívna je výraznejšia */
+        .datatable-zebra thead th a.table-sort .sort-icon {
+            font-size: 0.75rem;
+            transition: opacity .15s ease;
+        }
+        .datatable-zebra thead th a.table-sort .sort-icon.sort-neutral {
+            opacity: 0.35;
+        }
+        .datatable-zebra thead th a.table-sort:hover .sort-icon.sort-neutral {
+            opacity: 0.65;
+        }
+        .datatable-zebra thead th a.table-sort.asc,
+        .datatable-zebra thead th a.table-sort.desc {
+            color: var(--tblr-primary, #206bc4);
+        }
+
+        /* Kompaktné štvorcové akčné tlačidlá v riadku (28×28 px) */
+        .datatable-row-actions .btn {
+            width: 28px;
+            height: 28px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+        .datatable-row-actions .btn i {
+            font-size: 0.8125rem !important;
+        }
     </style>
 
     {{-- Header s vyhľadávaním a akciami --}}
@@ -38,7 +180,7 @@
                 <div class="col-auto">
                     <div class="input-icon">
                         <span class="input-icon-addon">
-                            <i class="ti ti-search"></i>
+                            <i class="{{ dticon('search') }}"></i>
                         </span>
                         <input type="text"
                                class="form-control"
@@ -65,10 +207,10 @@
                                         aria-expanded="false">
                                     @if($selectedSavedFilterId)
                                         @php $currentSavedFilter = $savedFilters->firstWhere('id', $selectedSavedFilterId); @endphp
-                                        <i class="ti ti-filter-star me-1"></i>
+                                        <i class="{{ dticon('filter-star') }} me-1"></i>
                                         {{ $currentSavedFilter?->name ?? __('datatable::datatable.saved_filters') }}
                                     @else
-                                        <i class="ti ti-filter-star me-1"></i>
+                                        <i class="{{ dticon('filter-star') }} me-1"></i>
                                         {{ __('datatable::datatable.saved_filters') }}
                                     @endif
                                 </button>
@@ -83,9 +225,9 @@
                                             </a>
                                             <button type="button"
                                                     class="btn btn-sm btn-ghost-danger p-1 me-2"
-                                                    onclick="window.dispatchEvent(new CustomEvent('open-confirm-modal', { detail: { title: '{{ __('datatable::datatable.delete_filter') }}', message: '{{ __('datatable::datatable.confirm_delete_filter') }}', onConfirmEmit: 'deleteSavedFilter', onConfirmParams: { filterId: {{ $savedFilter->id }} }, confirmText: '{{ __('datatable::datatable.delete') }}', confirmColor: 'danger', icon: 'ti-trash' } })); return false;"
+                                                    onclick="window.dispatchEvent(new CustomEvent('open-confirm-modal', { detail: { title: '{{ __('datatable::datatable.delete_filter') }}', message: '{{ __('datatable::datatable.confirm_delete_filter') }}', onConfirmEmit: 'deleteSavedFilter', onConfirmParams: { filterId: {{ $savedFilter->id }} }, confirmText: '{{ __('datatable::datatable.delete') }}', confirmColor: 'danger', icon: '{{ dticon('trash') }}' } })); return false;"
                                                     title="{{ __('datatable::datatable.delete') }}">
-                                                <i class="ti ti-trash fs-4"></i>
+                                                <i class="{{ dticon('trash') }} fs-4"></i>
                                             </button>
                                         </li>
                                     @endforeach
@@ -99,7 +241,7 @@
                                     class="btn btn-ghost-danger btn-icon"
                                     wire:click="clearFilters"
                                     title="{{ __('datatable::datatable.clear_filter') }}">
-                                <i class="ti ti-x fs-2"></i>
+                                <i class="{{ dticon('x') }} fs-5"></i>
                             </button>
                         @endif
 
@@ -108,7 +250,7 @@
                                 class="btn btn-ghost-secondary btn-icon position-relative"
                                 wire:click="$toggle('showFilterBuilder')"
                                 title="{{ __('datatable::datatable.filter') }}">
-                            <i class="ti ti-filter fs-2"></i>
+                            <i class="{{ dticon('filter') }} fs-5 text-body-tertiary"></i>
                             @if(count($activeFilters) > 0)
                                 <span class="badge bg-primary text-white badge-notification badge-pill badge-filter-count">{{ count($activeFilters) }}</span>
                             @endif
@@ -120,7 +262,7 @@
                                 wire:click="$refresh"
                                 wire:loading.attr="disabled"
                                 title="{{ __('datatable::datatable.refresh') }}">
-                            <i class="ti ti-refresh fs-2" wire:loading.class="icon-spin"></i>
+                            <i class="{{ dticon('refresh') }} fs-5 text-body-tertiary" wire:loading.class="icon-spin"></i>
                         </button>
 
                         {{-- Export CSV button --}}
@@ -129,7 +271,7 @@
                                 wire:click="exportToCsv"
                                 wire:loading.attr="disabled"
                                 title="{{ __('datatable::datatable.export_csv') }}">
-                            <i class="ti ti-file-export fs-2"></i>
+                            <i class="{{ dticon('file-export') }} fs-5 text-body-tertiary"></i>
                         </button>
 
                         {{-- Column settings --}}
@@ -137,7 +279,7 @@
                                 class="btn btn-ghost-secondary btn-icon"
                                 wire:click="$toggle('showColumnSettings')"
                                 title="{{ __('datatable::datatable.column_settings') }}">
-                            <i class="ti ti-settings fs-2"></i>
+                            <i class="{{ dticon('settings') }} fs-5 text-body-tertiary"></i>
                         </button>
                     </div>
                 </div>
@@ -156,9 +298,14 @@
                                 style="background: transparent !important;@if($column->getWidth()) width: {{ $column->getWidth() }}px;@endif">
                                 @if($column->isSortable())
                                     <a href="#"
-                                       class="table-sort @if($sortColumn === $column->getKey()) {{ $sortDirection === 'asc' ? 'asc' : 'desc' }} @endif"
+                                       class="table-sort text-decoration-none d-inline-flex align-items-center gap-1 @if($sortColumn === $column->getKey()) {{ $sortDirection === 'asc' ? 'asc' : 'desc' }} @endif"
                                        wire:click.prevent="sortBy('{{ $column->getKey() }}')">
                                         {{ $column->getLabel() }}
+                                        @if($sortColumn === $column->getKey())
+                                            <i class="{{ $sortDirection === 'asc' ? dticon('sort-asc') : dticon('sort-desc') }} sort-icon"></i>
+                                        @else
+                                            <i class="{{ dticon('sort') }} sort-icon sort-neutral"></i>
+                                        @endif
                                     </a>
                                 @else
                                     {{ $column->getLabel() }}
@@ -204,7 +351,7 @@
                                 <td>
                                     @php $rowActions = $this->rowActions($row); @endphp
                                     @if(count($rowActions) > 0)
-                                        <div class="btn-list flex-nowrap">
+                                        <div class="btn-list flex-nowrap justify-content-end datatable-row-actions">
                                             @foreach($rowActions as $action)
                                                 @php
                                                     $btnClass = 'btn-outline-' . ($action['color'] ?? 'secondary');
@@ -215,14 +362,14 @@
                                                        class="btn btn-sm {{ $btnClass }}"
                                                        title="{{ $action['label'] }}"
                                                        onclick="event.stopPropagation()">
-                                                        <i class="ti ti-{{ $action['icon'] }} fs-3"></i>
+                                                        <i class="{{ dticon($action['icon']) }} fs-5"></i>
                                                     </a>
                                                 @elseif($confirmMessage)
                                                     <a href="#"
                                                        class="btn btn-sm {{ $btnClass }}"
-                                                       onclick="event.stopPropagation(); window.dispatchEvent(new CustomEvent('open-confirm-modal', { detail: { title: '{{ $action['label'] }}', message: '{{ addslashes($confirmMessage) }}', onConfirmEmit: '{{ $action['method'] }}Confirmed', onConfirmParams: { id: {{ $row->id }} }, confirmText: '{{ $action['label'] }}', confirmColor: '{{ $action['color'] ?? 'danger' }}', icon: 'ti-{{ $action['icon'] }}' } })); return false;"
+                                                       onclick="event.stopPropagation(); window.dispatchEvent(new CustomEvent('open-confirm-modal', { detail: { title: '{{ $action['label'] }}', message: '{{ addslashes($confirmMessage) }}', onConfirmEmit: '{{ $action['method'] }}Confirmed', onConfirmParams: { id: {{ $row->id }} }, confirmText: '{{ $action['label'] }}', confirmColor: '{{ $action['color'] ?? 'danger' }}', icon: '{{ dticon($action['icon']) }}' } })); return false;"
                                                        title="{{ $action['label'] }}">
-                                                        <i class="ti ti-{{ $action['icon'] }} fs-3"></i>
+                                                        <i class="{{ dticon($action['icon']) }} fs-5"></i>
                                                     </a>
                                                 @else
                                                     <a href="#"
@@ -230,7 +377,7 @@
                                                        wire:click.prevent="{{ $action['method'] }}({{ $row->id }})"
                                                        onclick="event.stopPropagation()"
                                                        title="{{ $action['label'] }}">
-                                                        <i class="ti ti-{{ $action['icon'] }} fs-3"></i>
+                                                        <i class="{{ dticon($action['icon']) }} fs-5"></i>
                                                     </a>
                                                 @endif
                                             @endforeach

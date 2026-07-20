@@ -2,6 +2,9 @@
 
 namespace PeterAlaxin\DataTable\Traits;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -13,6 +16,7 @@ use PeterAlaxin\DataTable\Filters\Filter;
 use PeterAlaxin\DataTable\Models\SavedFilter;
 use PeterAlaxin\DataTable\Models\TableSetting;
 use RuntimeException;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 trait WithDataTable
 {
@@ -253,7 +257,7 @@ trait WithDataTable
     }
 
     /**
-     * @param array<int, array{key: string, visible: bool, show_sum: bool}> $settings
+     * @param  array<int, array{key: string, visible: bool, show_sum: bool}>  $settings
      */
     public function updateColumnSettings(array $settings): void
     {
@@ -274,7 +278,7 @@ trait WithDataTable
         }
 
         if (! $found) {
-            $column = collect($this->defineColumns())->first(fn($col) => $col->getKey() === $key);
+            $column = collect($this->defineColumns())->first(fn ($col) => $col->getKey() === $key);
             if ($column) {
                 $this->columnSettings[] = [
                     'key' => $key,
@@ -289,7 +293,7 @@ trait WithDataTable
     }
 
     /**
-     * @param array<int, string> $order
+     * @param  array<int, string>  $order
      */
     public function reorderColumns(array $order): void
     {
@@ -323,15 +327,15 @@ trait WithDataTable
     }
 
     /**
-     * @return LengthAwarePaginator<int, \Illuminate\Database\Eloquent\Model>
+     * @return LengthAwarePaginator<int, Model>
      */
     public function getData(): LengthAwarePaginator
     {
         $query = $this->baseQuery();
 
         $relations = $this->getColumns()
-            ->filter(fn(Column $col) => $col->getRelation() !== null)
-            ->map(fn(Column $col) => $col->getRelation())
+            ->filter(fn (Column $col) => $col->getRelation() !== null)
+            ->map(fn (Column $col) => $col->getRelation())
             ->filter()
             ->unique()
             ->toArray();
@@ -342,7 +346,7 @@ trait WithDataTable
 
         if ($this->search) {
             $searchableColumns = $this->getColumns()
-                ->filter(fn(Column $col) => $col->isSearchable());
+                ->filter(fn (Column $col) => $col->isSearchable());
 
             if ($searchableColumns->isNotEmpty()) {
                 $search = $this->search;
@@ -366,7 +370,7 @@ trait WithDataTable
         $groupedFilters = collect($this->activeFilters)->groupBy('column');
 
         foreach ($groupedFilters as $column => $columnFilters) {
-            $filterDef = $this->getFilters()->first(fn(Filter $f) => $f->getColumn() === $column);
+            $filterDef = $this->getFilters()->first(fn (Filter $f) => $f->getColumn() === $column);
             if ($filterDef) {
                 if ($columnFilters->count() === 1) {
                     $filter = $columnFilters->first();
@@ -374,7 +378,7 @@ trait WithDataTable
                         $query = $filterDef->apply($query, $filter['operator'], $filter['value']);
                     }
                 } else {
-                    $allNegative = $columnFilters->every(fn($f) => in_array($f['operator'], $negativeOperators));
+                    $allNegative = $columnFilters->every(fn ($f) => in_array($f['operator'], $negativeOperators));
 
                     if ($allNegative) {
                         foreach ($columnFilters as $filter) {
@@ -395,7 +399,7 @@ trait WithDataTable
         }
 
         if ($this->sortColumn) {
-            $column = $this->getColumns()->first(fn(Column $c) => $c->getKey() === $this->sortColumn);
+            $column = $this->getColumns()->first(fn (Column $c) => $c->getKey() === $this->sortColumn);
             if ($column && $column->isSortable()) {
                 $query->reorder();
                 if ($column->hasSortUsing()) {
@@ -407,7 +411,7 @@ trait WithDataTable
                     $model = $query->getModel();
                     $relation = $model->{$relationName}();
 
-                    if ($relation instanceof \Illuminate\Database\Eloquent\Relations\BelongsTo) {
+                    if ($relation instanceof BelongsTo) {
                         $relatedTable = $relation->getRelated()->getTable();
                         $foreignKey = $relation->getForeignKeyName();
                         $ownerKey = $relation->getOwnerKeyName();
@@ -418,7 +422,7 @@ trait WithDataTable
                             [$nestedRelationName, $actualColumn] = explode('.', $relationColumn, 2);
                             $nestedRelation = $relation->getRelated()->{$nestedRelationName}();
 
-                            if ($nestedRelation instanceof \Illuminate\Database\Eloquent\Relations\BelongsTo) {
+                            if ($nestedRelation instanceof BelongsTo) {
                                 $nestedTable = $nestedRelation->getRelated()->getTable();
                                 $nestedForeignKey = $nestedRelation->getForeignKeyName();
                                 $nestedOwnerKey = $nestedRelation->getOwnerKeyName();
@@ -459,7 +463,7 @@ trait WithDataTable
         $sums = [];
 
         $summableColumns = $this->getColumns()
-            ->filter(fn(Column $col) => $col->isSummable());
+            ->filter(fn (Column $col) => $col->isSummable());
 
         $negativeOperators = ['not_equals', 'not_contains', 'is_not_empty'];
 
@@ -469,7 +473,7 @@ trait WithDataTable
                 $query = $this->baseQuery();
                 $groupedFilters = collect($this->activeFilters)->groupBy('column');
                 foreach ($groupedFilters as $filterColumn => $columnFilters) {
-                    $filterDef = $this->getFilters()->first(fn(Filter $f) => $f->getColumn() === $filterColumn);
+                    $filterDef = $this->getFilters()->first(fn (Filter $f) => $f->getColumn() === $filterColumn);
                     if ($filterDef) {
                         if ($columnFilters->count() === 1) {
                             $filter = $columnFilters->first();
@@ -477,7 +481,7 @@ trait WithDataTable
                                 $query = $filterDef->apply($query, $filter['operator'], $filter['value']);
                             }
                         } else {
-                            $allNegative = $columnFilters->every(fn($f) => in_array($f['operator'], $negativeOperators));
+                            $allNegative = $columnFilters->every(fn ($f) => in_array($f['operator'], $negativeOperators));
 
                             if ($allNegative) {
                                 foreach ($columnFilters as $filter) {
@@ -516,7 +520,7 @@ trait WithDataTable
         return $this->getTableIdentifier();
     }
 
-    public function exportToCsv(): \Symfony\Component\HttpFoundation\StreamedResponse
+    public function exportToCsv(): StreamedResponse
     {
         $filename = $this->getExportFilename().'_'.date('Y-m-d_H-i-s').'.csv';
         $csvSeparator = config('datatable.csv_separator', ';');
@@ -530,14 +534,14 @@ trait WithDataTable
             fwrite($handle, "\xEF\xBB\xBF");
 
             $columns = $this->getVisibleColumns();
-            $headers = $columns->map(fn(Column $col) => $col->getLabel())->toArray();
+            $headers = $columns->map(fn (Column $col) => $col->getLabel())->toArray();
             fputcsv($handle, $headers, $csvSeparator);
 
             $query = $this->baseQuery();
 
             $relations = $this->getColumns()
-                ->filter(fn(Column $col) => $col->getRelation() !== null)
-                ->map(fn(Column $col) => $col->getRelation())
+                ->filter(fn (Column $col) => $col->getRelation() !== null)
+                ->map(fn (Column $col) => $col->getRelation())
                 ->filter()
                 ->unique()
                 ->toArray();
@@ -548,7 +552,7 @@ trait WithDataTable
 
             if ($this->search) {
                 $searchableColumns = $this->getColumns()
-                    ->filter(fn(Column $col) => $col->isSearchable());
+                    ->filter(fn (Column $col) => $col->isSearchable());
 
                 if ($searchableColumns->isNotEmpty()) {
                     $search = $this->search;
@@ -572,7 +576,7 @@ trait WithDataTable
             $groupedFilters = collect($this->activeFilters)->groupBy('column');
 
             foreach ($groupedFilters as $filterColumn => $columnFilters) {
-                $filterDef = $this->getFilters()->first(fn(Filter $f) => $f->getColumn() === $filterColumn);
+                $filterDef = $this->getFilters()->first(fn (Filter $f) => $f->getColumn() === $filterColumn);
                 if ($filterDef) {
                     if ($columnFilters->count() === 1) {
                         $filter = $columnFilters->first();
@@ -580,7 +584,7 @@ trait WithDataTable
                             $query = $filterDef->apply($query, $filter['operator'], $filter['value']);
                         }
                     } else {
-                        $allNegative = $columnFilters->every(fn($f) => in_array($f['operator'], $negativeOperators));
+                        $allNegative = $columnFilters->every(fn ($f) => in_array($f['operator'], $negativeOperators));
 
                         if ($allNegative) {
                             foreach ($columnFilters as $filter) {
@@ -601,7 +605,7 @@ trait WithDataTable
             }
 
             if ($this->sortColumn) {
-                $column = $this->getColumns()->first(fn(Column $c) => $c->getKey() === $this->sortColumn);
+                $column = $this->getColumns()->first(fn (Column $c) => $c->getKey() === $this->sortColumn);
                 if ($column && $column->isSortable() && ! $column->getRelation()) {
                     $query->reorder()->orderBy($this->sortColumn, $this->sortDirection);
                 }
@@ -661,14 +665,13 @@ trait WithDataTable
         $this->saveSettings();
     }
 
-    public function getRowUrl(\Illuminate\Database\Eloquent\Model $row): ?string
+    public function getRowUrl(Model $row): ?string
     {
         return null;
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Model|null $row
-     *
+     * @param  Model|null  $row
      * @return array<int, array{method: string, label: string, icon: string, color?: string}>
      */
     public function rowActions($row = null): array
@@ -704,9 +707,9 @@ trait WithDataTable
     abstract protected function defineFilters(): array;
 
     /**
-     * @return \Illuminate\Database\Eloquent\Builder<covariant \Illuminate\Database\Eloquent\Model>
+     * @return Builder<covariant \Illuminate\Database\Eloquent\Model>
      */
-    abstract protected function baseQuery(): \Illuminate\Database\Eloquent\Builder;
+    abstract protected function baseQuery(): Builder;
 
     protected function loadColumnSettings(): void
     {
@@ -726,7 +729,7 @@ trait WithDataTable
             }
         } else {
             $this->columnSettings = collect($this->defineColumns())
-                ->map(fn(Column $col) => [
+                ->map(fn (Column $col) => [
                     'key' => $col->getKey(),
                     'visible' => $col->isVisible(),
                     'show_sum' => false,
@@ -791,7 +794,7 @@ trait WithDataTable
     protected function initializeSort(): void
     {
         if (empty($this->sortColumn)) {
-            $firstSortable = $this->getColumns()->first(fn(Column $col) => $col->isSortable());
+            $firstSortable = $this->getColumns()->first(fn (Column $col) => $col->isSortable());
             if ($firstSortable) {
                 $this->sortColumn = $firstSortable->getKey();
             }

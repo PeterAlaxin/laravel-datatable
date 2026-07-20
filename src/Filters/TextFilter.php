@@ -21,8 +21,7 @@ class TextFilter extends Filter
     ];
 
     /**
-     * @param Builder<covariant \Illuminate\Database\Eloquent\Model> $query
-     *
+     * @param  Builder<covariant \Illuminate\Database\Eloquent\Model>  $query
      * @return Builder<covariant \Illuminate\Database\Eloquent\Model>
      */
     public function apply(Builder $query, string $operator, mixed $value): Builder
@@ -39,8 +38,7 @@ class TextFilter extends Filter
     }
 
     /**
-     * @param Builder<covariant \Illuminate\Database\Eloquent\Model> $query
-     *
+     * @param  Builder<covariant \Illuminate\Database\Eloquent\Model>  $query
      * @return Builder<covariant \Illuminate\Database\Eloquent\Model>
      */
     protected function applyCondition(Builder $query, string $column, string $operator, mixed $value): Builder
@@ -52,8 +50,8 @@ class TextFilter extends Filter
             'equals' => $query->where($column, '=', $value),
             'not_equals' => $query->where($column, '!=', $value),
             'not_contains' => $query->where($column, 'NOT LIKE', "%{$value}%"),
-            'is_empty' => $query->where(fn($q) => $q->whereNull($column)->orWhere($column, '')),
-            'is_not_empty' => $query->where(fn($q) => $q->whereNotNull($column)->where($column, '!=', '')),
+            'is_empty' => $query->where(fn ($q) => $q->whereNull($column)->orWhere($column, '')),
+            'is_not_empty' => $query->where(fn ($q) => $q->whereNotNull($column)->where($column, '!=', '')),
             default => $query,
         };
     }
