@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.6.0] - 2026-07-22
+
+### Added
+- `toolbarActions()` method on the `WithDataTable` trait — adds custom global buttons to the header toolbar (independent of row selection), e.g. "Create", "Import" or a bulk sync. Supports link (`url`), Livewire method (`method`), optional confirmation modal (`confirm`), icon (resolved via `dticon()`) and Tabler `color`.
+
 ## [v1.5.0] - 2026-07-20
 
 ### Added

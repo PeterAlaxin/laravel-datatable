@@ -341,6 +341,49 @@ public function getExportFilename(): string
 }
 ```
 
+### Toolbar Actions
+
+Add custom global buttons to the header toolbar (independent of row selection),
+e.g. "Create", "Import" or a bulk sync. Override `toolbarActions()`:
+
+```php
+public function toolbarActions(): array
+{
+    return [
+        // Link to another page
+        [
+            'url' => route('users.create'),
+            'label' => 'New User',
+            'icon' => 'plus',
+            'color' => 'primary',
+        ],
+        // Livewire method call
+        [
+            'method' => 'openImportModal',
+            'label' => 'Import',
+            'icon' => 'file-import',
+        ],
+        // With confirmation — on confirm calls syncAllConfirmed()
+        [
+            'method' => 'syncAll',
+            'label' => 'Sync',
+            'icon' => 'refresh',
+            'color' => 'warning',
+            'confirm' => 'Run synchronization of all records?',
+        ],
+    ];
+}
+```
+
+Each action supports:
+
+- `url` — renders a link (takes precedence over `method`).
+- `method` — Livewire method invoked on click.
+- `confirm` — shows a confirmation modal; on confirm emits `{method}Confirmed` (no parameters, since the action is global).
+- `label` — button text and tooltip.
+- `icon` — optional icon preset key resolved via `dticon()`.
+- `color` — Tabler color; renders a solid `btn-{color}` when set, a ghost button otherwise.
+
 ### Row Actions
 
 ```php

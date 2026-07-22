@@ -197,6 +197,38 @@
                 {{-- Akcie --}}
                 <div class="col-auto ms-auto">
                     <div class="btn-list">
+                        {{-- Vlastné toolbar akcie (globálne, nezávislé od výberu riadkov) --}}
+                        @foreach($this->toolbarActions() as $action)
+                            @php
+                                $btnClass = isset($action['color']) ? 'btn-' . $action['color'] : 'btn-ghost-secondary';
+                            @endphp
+                            @if(isset($action['url']))
+                                <a href="{{ $action['url'] }}"
+                                   class="btn {{ $btnClass }}"
+                                   title="{{ $action['label'] }}">
+                                    @isset($action['icon'])<i class="{{ dticon($action['icon']) }} me-1"></i>@endisset
+                                    {{ $action['label'] }}
+                                </a>
+                            @elseif(isset($action['confirm']))
+                                <button type="button"
+                                        class="btn {{ $btnClass }}"
+                                        title="{{ $action['label'] }}"
+                                        onclick="window.dispatchEvent(new CustomEvent('open-confirm-modal', { detail: { title: '{{ $action['label'] }}', message: '{{ addslashes($action['confirm']) }}', onConfirmEmit: '{{ $action['method'] }}Confirmed', onConfirmParams: {}, confirmText: '{{ $action['label'] }}', confirmColor: '{{ $action['color'] ?? 'primary' }}', icon: '{{ isset($action['icon']) ? dticon($action['icon']) : '' }}' } })); return false;">
+                                    @isset($action['icon'])<i class="{{ dticon($action['icon']) }} me-1"></i>@endisset
+                                    {{ $action['label'] }}
+                                </button>
+                            @else
+                                <button type="button"
+                                        class="btn {{ $btnClass }}"
+                                        wire:click="{{ $action['method'] }}"
+                                        wire:loading.attr="disabled"
+                                        title="{{ $action['label'] }}">
+                                    @isset($action['icon'])<i class="{{ dticon($action['icon']) }} me-1"></i>@endisset
+                                    {{ $action['label'] }}
+                                </button>
+                            @endif
+                        @endforeach
+
                         {{-- Saved Filters Dropdown --}}
                         @php $savedFilters = $this->getSavedFilters(); @endphp
                         @if($savedFilters->count() > 0)

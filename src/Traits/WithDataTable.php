@@ -257,7 +257,7 @@ trait WithDataTable
     }
 
     /**
-     * @param  array<int, array{key: string, visible: bool, show_sum: bool}>  $settings
+     * @param array<int, array{key: string, visible: bool, show_sum: bool}> $settings
      */
     public function updateColumnSettings(array $settings): void
     {
@@ -278,7 +278,7 @@ trait WithDataTable
         }
 
         if (! $found) {
-            $column = collect($this->defineColumns())->first(fn ($col) => $col->getKey() === $key);
+            $column = collect($this->defineColumns())->first(fn($col) => $col->getKey() === $key);
             if ($column) {
                 $this->columnSettings[] = [
                     'key' => $key,
@@ -293,7 +293,7 @@ trait WithDataTable
     }
 
     /**
-     * @param  array<int, string>  $order
+     * @param array<int, string> $order
      */
     public function reorderColumns(array $order): void
     {
@@ -334,8 +334,8 @@ trait WithDataTable
         $query = $this->baseQuery();
 
         $relations = $this->getColumns()
-            ->filter(fn (Column $col) => $col->getRelation() !== null)
-            ->map(fn (Column $col) => $col->getRelation())
+            ->filter(fn(Column $col) => $col->getRelation() !== null)
+            ->map(fn(Column $col) => $col->getRelation())
             ->filter()
             ->unique()
             ->toArray();
@@ -346,7 +346,7 @@ trait WithDataTable
 
         if ($this->search) {
             $searchableColumns = $this->getColumns()
-                ->filter(fn (Column $col) => $col->isSearchable());
+                ->filter(fn(Column $col) => $col->isSearchable());
 
             if ($searchableColumns->isNotEmpty()) {
                 $search = $this->search;
@@ -370,7 +370,7 @@ trait WithDataTable
         $groupedFilters = collect($this->activeFilters)->groupBy('column');
 
         foreach ($groupedFilters as $column => $columnFilters) {
-            $filterDef = $this->getFilters()->first(fn (Filter $f) => $f->getColumn() === $column);
+            $filterDef = $this->getFilters()->first(fn(Filter $f) => $f->getColumn() === $column);
             if ($filterDef) {
                 if ($columnFilters->count() === 1) {
                     $filter = $columnFilters->first();
@@ -378,7 +378,7 @@ trait WithDataTable
                         $query = $filterDef->apply($query, $filter['operator'], $filter['value']);
                     }
                 } else {
-                    $allNegative = $columnFilters->every(fn ($f) => in_array($f['operator'], $negativeOperators));
+                    $allNegative = $columnFilters->every(fn($f) => in_array($f['operator'], $negativeOperators));
 
                     if ($allNegative) {
                         foreach ($columnFilters as $filter) {
@@ -399,7 +399,7 @@ trait WithDataTable
         }
 
         if ($this->sortColumn) {
-            $column = $this->getColumns()->first(fn (Column $c) => $c->getKey() === $this->sortColumn);
+            $column = $this->getColumns()->first(fn(Column $c) => $c->getKey() === $this->sortColumn);
             if ($column && $column->isSortable()) {
                 $query->reorder();
                 if ($column->hasSortUsing()) {
@@ -463,7 +463,7 @@ trait WithDataTable
         $sums = [];
 
         $summableColumns = $this->getColumns()
-            ->filter(fn (Column $col) => $col->isSummable());
+            ->filter(fn(Column $col) => $col->isSummable());
 
         $negativeOperators = ['not_equals', 'not_contains', 'is_not_empty'];
 
@@ -473,7 +473,7 @@ trait WithDataTable
                 $query = $this->baseQuery();
                 $groupedFilters = collect($this->activeFilters)->groupBy('column');
                 foreach ($groupedFilters as $filterColumn => $columnFilters) {
-                    $filterDef = $this->getFilters()->first(fn (Filter $f) => $f->getColumn() === $filterColumn);
+                    $filterDef = $this->getFilters()->first(fn(Filter $f) => $f->getColumn() === $filterColumn);
                     if ($filterDef) {
                         if ($columnFilters->count() === 1) {
                             $filter = $columnFilters->first();
@@ -481,7 +481,7 @@ trait WithDataTable
                                 $query = $filterDef->apply($query, $filter['operator'], $filter['value']);
                             }
                         } else {
-                            $allNegative = $columnFilters->every(fn ($f) => in_array($f['operator'], $negativeOperators));
+                            $allNegative = $columnFilters->every(fn($f) => in_array($f['operator'], $negativeOperators));
 
                             if ($allNegative) {
                                 foreach ($columnFilters as $filter) {
@@ -534,14 +534,14 @@ trait WithDataTable
             fwrite($handle, "\xEF\xBB\xBF");
 
             $columns = $this->getVisibleColumns();
-            $headers = $columns->map(fn (Column $col) => $col->getLabel())->toArray();
+            $headers = $columns->map(fn(Column $col) => $col->getLabel())->toArray();
             fputcsv($handle, $headers, $csvSeparator);
 
             $query = $this->baseQuery();
 
             $relations = $this->getColumns()
-                ->filter(fn (Column $col) => $col->getRelation() !== null)
-                ->map(fn (Column $col) => $col->getRelation())
+                ->filter(fn(Column $col) => $col->getRelation() !== null)
+                ->map(fn(Column $col) => $col->getRelation())
                 ->filter()
                 ->unique()
                 ->toArray();
@@ -552,7 +552,7 @@ trait WithDataTable
 
             if ($this->search) {
                 $searchableColumns = $this->getColumns()
-                    ->filter(fn (Column $col) => $col->isSearchable());
+                    ->filter(fn(Column $col) => $col->isSearchable());
 
                 if ($searchableColumns->isNotEmpty()) {
                     $search = $this->search;
@@ -576,7 +576,7 @@ trait WithDataTable
             $groupedFilters = collect($this->activeFilters)->groupBy('column');
 
             foreach ($groupedFilters as $filterColumn => $columnFilters) {
-                $filterDef = $this->getFilters()->first(fn (Filter $f) => $f->getColumn() === $filterColumn);
+                $filterDef = $this->getFilters()->first(fn(Filter $f) => $f->getColumn() === $filterColumn);
                 if ($filterDef) {
                     if ($columnFilters->count() === 1) {
                         $filter = $columnFilters->first();
@@ -584,7 +584,7 @@ trait WithDataTable
                             $query = $filterDef->apply($query, $filter['operator'], $filter['value']);
                         }
                     } else {
-                        $allNegative = $columnFilters->every(fn ($f) => in_array($f['operator'], $negativeOperators));
+                        $allNegative = $columnFilters->every(fn($f) => in_array($f['operator'], $negativeOperators));
 
                         if ($allNegative) {
                             foreach ($columnFilters as $filter) {
@@ -605,7 +605,7 @@ trait WithDataTable
             }
 
             if ($this->sortColumn) {
-                $column = $this->getColumns()->first(fn (Column $c) => $c->getKey() === $this->sortColumn);
+                $column = $this->getColumns()->first(fn(Column $c) => $c->getKey() === $this->sortColumn);
                 if ($column && $column->isSortable() && ! $column->getRelation()) {
                     $query->reorder()->orderBy($this->sortColumn, $this->sortDirection);
                 }
@@ -671,7 +671,8 @@ trait WithDataTable
     }
 
     /**
-     * @param  Model|null  $row
+     * @param Model|null $row
+     *
      * @return array<int, array{method: string, label: string, icon: string, color?: string}>
      */
     public function rowActions($row = null): array
@@ -683,6 +684,26 @@ trait WithDataTable
      * @return array<int, array{method: string, label: string, icon?: string}>
      */
     public function bulkActions(): array
+    {
+        return [];
+    }
+
+    /**
+     * Custom toolbar buttons rendered in the header action bar.
+     * Override in concrete table classes to add global actions
+     * (e.g. "Create", "Import") that are independent of row selection.
+     *
+     * Each action supports:
+     *   - url:     render as a link (takes precedence over method)
+     *   - method:  Livewire method invoked on click
+     *   - confirm: message shown in confirmation modal; on confirm emits "{method}Confirmed"
+     *   - label:   button text / tooltip
+     *   - icon:    icon preset key resolved via dticon()
+     *   - color:   Tabler color; solid "btn-{color}" when set, ghost otherwise
+     *
+     * @return array<int, array{method?: string, url?: string, label: string, icon?: string, color?: string, confirm?: string}>
+     */
+    public function toolbarActions(): array
     {
         return [];
     }
@@ -729,7 +750,7 @@ trait WithDataTable
             }
         } else {
             $this->columnSettings = collect($this->defineColumns())
-                ->map(fn (Column $col) => [
+                ->map(fn(Column $col) => [
                     'key' => $col->getKey(),
                     'visible' => $col->isVisible(),
                     'show_sum' => false,
@@ -794,7 +815,7 @@ trait WithDataTable
     protected function initializeSort(): void
     {
         if (empty($this->sortColumn)) {
-            $firstSortable = $this->getColumns()->first(fn (Column $col) => $col->isSortable());
+            $firstSortable = $this->getColumns()->first(fn(Column $col) => $col->isSortable());
             if ($firstSortable) {
                 $this->sortColumn = $firstSortable->getKey();
             }
