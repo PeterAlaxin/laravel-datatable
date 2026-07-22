@@ -26,7 +26,8 @@ class DateFilter extends Filter
     ];
 
     /**
-     * @param  Builder<covariant \Illuminate\Database\Eloquent\Model>  $query
+     * @param Builder<covariant \Illuminate\Database\Eloquent\Model> $query
+     *
      * @return Builder<covariant \Illuminate\Database\Eloquent\Model>
      */
     public function apply(Builder $query, string $operator, mixed $value): Builder
@@ -43,7 +44,8 @@ class DateFilter extends Filter
     }
 
     /**
-     * @param  Builder<covariant \Illuminate\Database\Eloquent\Model>  $query
+     * @param Builder<covariant \Illuminate\Database\Eloquent\Model> $query
+     *
      * @return Builder<covariant \Illuminate\Database\Eloquent\Model>
      */
     protected function applyCondition(Builder $query, string $column, string $operator, mixed $value): Builder

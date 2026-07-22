@@ -163,7 +163,8 @@ abstract class Column
     /**
      * @template TModel of \Illuminate\Database\Eloquent\Model
      *
-     * @param  Builder<TModel>  $query
+     * @param Builder<TModel> $query
+     *
      * @return Builder<TModel>
      */
     public function applySortUsing(Builder $query, string $direction): Builder
@@ -175,7 +176,7 @@ abstract class Column
     }
 
     /**
-     * @param  Closure(Builder<covariant \Illuminate\Database\Eloquent\Model>, string): void  $callback
+     * @param Closure(Builder<covariant \Illuminate\Database\Eloquent\Model>, string): void $callback
      */
     public function searchUsing(Closure $callback): static
     {
@@ -191,7 +192,7 @@ abstract class Column
     }
 
     /**
-     * @param  Builder<covariant \Illuminate\Database\Eloquent\Model>  $query
+     * @param Builder<covariant \Illuminate\Database\Eloquent\Model> $query
      */
     public function applySearchUsing(Builder $query, string $search): void
     {

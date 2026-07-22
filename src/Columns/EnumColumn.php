@@ -13,7 +13,7 @@ class EnumColumn extends Column
     protected array $colors = [];
 
     /**
-     * @param  array<array-key, string>  $options
+     * @param array<array-key, string> $options
      */
     public function options(array $options): static
     {
@@ -23,7 +23,7 @@ class EnumColumn extends Column
     }
 
     /**
-     * @param  array<array-key, string>  $colors
+     * @param array<array-key, string> $colors
      */
     public function colors(array $colors): static
     {

@@ -26,7 +26,7 @@ class SelectFilter extends Filter
     ];
 
     /**
-     * @param  array<int|string, string>  $options
+     * @param array<int|string, string> $options
      */
     public function options(array $options): static
     {
@@ -56,7 +56,7 @@ class SelectFilter extends Filter
     }
 
     /**
-     * @param  Closure(Builder<covariant \Illuminate\Database\Eloquent\Model>, string, mixed): Builder<covariant \Illuminate\Database\Eloquent\Model>  $callback
+     * @param Closure(Builder<covariant \Illuminate\Database\Eloquent\Model>, string, mixed): Builder<covariant \Illuminate\Database\Eloquent\Model> $callback
      */
     public function queryUsing(Closure $callback): static
     {
@@ -66,7 +66,8 @@ class SelectFilter extends Filter
     }
 
     /**
-     * @param  Builder<covariant \Illuminate\Database\Eloquent\Model>  $query
+     * @param Builder<covariant \Illuminate\Database\Eloquent\Model> $query
+     *
      * @return Builder<covariant \Illuminate\Database\Eloquent\Model>
      */
     public function apply(Builder $query, string $operator, mixed $value): Builder
@@ -98,7 +99,8 @@ class SelectFilter extends Filter
     }
 
     /**
-     * @param  Builder<covariant \Illuminate\Database\Eloquent\Model>  $query
+     * @param Builder<covariant \Illuminate\Database\Eloquent\Model> $query
+     *
      * @return Builder<covariant \Illuminate\Database\Eloquent\Model>
      */
     protected function applyCondition(Builder $query, string $column, string $operator, mixed $value): Builder

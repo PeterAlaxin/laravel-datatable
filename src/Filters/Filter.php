@@ -78,7 +78,8 @@ abstract class Filter
     }
 
     /**
-     * @param  Builder<covariant \Illuminate\Database\Eloquent\Model>  $query
+     * @param Builder<covariant \Illuminate\Database\Eloquent\Model> $query
+     *
      * @return Builder<covariant \Illuminate\Database\Eloquent\Model>
      */
     abstract public function apply(Builder $query, string $operator, mixed $value): Builder;
